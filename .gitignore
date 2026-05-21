@@ -1,0 +1,22 @@
+# macOS system files
+.DS_Store
+Thumbs.db
+
+# Swift compiled binaries
+artists/*/src/video_editor
+artists/*/src/probe_video
+artists/*/src/extract_neon
+artists/*/src/extract_output_frames
+artists/*/src/extract_frames
+artists/*/src/ocr
+artists/*/src/ocr_details
+artists/*/src/ocr_frames
+artists/*/src/test_filter
+
+# Temporary / environment directories
+.system_generated/
+.gemini/
+*.log
+.DS_Store?
+.Spotlight-V100
+.Trashes
