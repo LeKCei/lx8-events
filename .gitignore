@@ -20,3 +20,6 @@ artists/*/src/test_filter
 .DS_Store?
 .Spotlight-V100
 .Trashes
+
+# High-resolution media outputs
+artists/*/Final_Deliverables/

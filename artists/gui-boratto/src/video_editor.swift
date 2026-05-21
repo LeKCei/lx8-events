@@ -637,7 +637,7 @@ if mode.hasPrefix("tour") {
     
     // 1. Presents header
     let presentsLayer = CATextLayer()
-    let presY: CGFloat = format == "story" ? 1480 : 1080
+    let presY: CGFloat = format == "story" ? 1520 : 1110
     let presSize: CGFloat = format == "story" ? 24 : 20
     presentsLayer.frame = CGRect(x: 80, y: presY, width: 920, height: 40)
     presentsLayer.string = "D Ü K E R   M U S I C   P R E S E N T S"
@@ -652,7 +652,7 @@ if mode.hasPrefix("tour") {
     let logoLayer = CALayer()
     let logoW: CGFloat = format == "story" ? 600 : 500
     let logoH: CGFloat = format == "story" ? 96 : 80
-    let logoY: CGFloat = format == "story" ? 1260 : 920
+    let logoY: CGFloat = format == "story" ? 1280 : 940
     if let logo = logoCGImage {
         logoLayer.frame = CGRect(x: (videoSize.width - logoW) / 2.0, y: logoY, width: logoW, height: logoH)
         logoLayer.contents = logo
@@ -661,7 +661,7 @@ if mode.hasPrefix("tour") {
     
     // 3. Show Date
     let dateLayer = CATextLayer()
-    let dateY: CGFloat = format == "story" ? 1080 : 780
+    let dateY: CGFloat = format == "story" ? 1100 : 790
     let dateSize: CGFloat = format == "story" ? 42 : 34
     dateLayer.frame = CGRect(x: 80, y: dateY, width: 920, height: 60)
     dateLayer.string = "THURSDAY, 25 JUNE 2026"
@@ -674,7 +674,7 @@ if mode.hasPrefix("tour") {
     
     // 4. Time details
     let timeLayer = CATextLayer()
-    let timeY: CGFloat = format == "story" ? 1000 : 720
+    let timeY: CGFloat = format == "story" ? 1010 : 710
     let timeSize: CGFloat = format == "story" ? 28 : 22
     timeLayer.frame = CGRect(x: 80, y: timeY, width: 920, height: 50)
     timeLayer.string = "DOORS OPEN 23:59"
@@ -687,7 +687,7 @@ if mode.hasPrefix("tour") {
     
     // 5. Venue name
     let venueLayer = CATextLayer()
-    let venY: CGFloat = format == "story" ? 820 : 580
+    let venY: CGFloat = format == "story" ? 820 : 570
     let venSize: CGFloat = format == "story" ? 54 : 44
     venueLayer.frame = CGRect(x: 80, y: venY, width: 920, height: 70)
     venueLayer.string = "MACARENA CLUB"
@@ -700,7 +700,7 @@ if mode.hasPrefix("tour") {
     
     // 6. City & Country
     let cityLayer = CATextLayer()
-    let cityY: CGFloat = format == "story" ? 740 : 510
+    let cityY: CGFloat = format == "story" ? 730 : 490
     let citySize: CGFloat = format == "story" ? 36 : 30
     cityLayer.frame = CGRect(x: 80, y: cityY, width: 920, height: 50)
     cityLayer.string = "BARCELONA, SPAIN"
@@ -713,7 +713,7 @@ if mode.hasPrefix("tour") {
     
     // 7. Address
     let addressLayer = CATextLayer()
-    let addrY: CGFloat = format == "story" ? 670 : 450
+    let addrY: CGFloat = format == "story" ? 650 : 420
     let addrSize: CGFloat = format == "story" ? 23 : 18
     addressLayer.frame = CGRect(x: 80, y: addrY, width: 920, height: 40)
     addressLayer.string = "CARRER NOU DE SAN FRANCESC, 5"
@@ -729,7 +729,7 @@ if mode.hasPrefix("tour") {
     let metropoleLayer = CALayer()
     let dukerLayer = CALayer()
     let backingLayer = CALayer()
-    let sponsorY: CGFloat = format == "story" ? 450 : 220
+    let sponsorY: CGFloat = format == "story" ? 420 : 200
     let sponsorH: CGFloat = format == "story" ? 36 : 30
     let gap: CGFloat = format == "story" ? 40 : 30
     
@@ -770,8 +770,8 @@ if mode.hasPrefix("tour") {
         promoContainer.addSublayer(dukerLayer)
     }
     
-    if style == "bokeh" {
-        // Dynamic Kinetic entry reveals
+    // Dynamic Kinetic entry reveals (Now applied to ALL video styles for maximum engagement!)
+    if true {
         presentsLayer.opacity = 0.0
         logoLayer.opacity = 0.0
         dateLayer.opacity = 0.0
@@ -784,36 +784,44 @@ if mode.hasPrefix("tour") {
         dukerLayer.opacity = 0.0
         backingLayer.opacity = 0.0
         
-        presentsLayer.add(createFadeAnimation(begin: 0.5, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        
+        // 1. Show the Artist Logo first ("Guiboratto")
         let logoMidY = logoY + logoH / 2.0
-        logoLayer.add(createFadeAnimation(begin: 1.0, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        logoLayer.add(createSlideAnimation(begin: 1.0, duration: 0.5, fromY: logoMidY - 30, toY: logoMidY), forKey: "slide")
+        logoLayer.add(createFadeAnimation(begin: 0.5, duration: 0.6, from: 0, to: 1), forKey: "fade")
+        logoLayer.add(createSlideAnimation(begin: 0.5, duration: 0.6, fromY: logoMidY - 40, toY: logoMidY), forKey: "slide")
         
+        // 2. Presents Header reveals second
+        presentsLayer.add(createFadeAnimation(begin: 1.2, duration: 0.5, from: 0, to: 1), forKey: "fade")
+        
+        // 3. Show Date
         let dateMidY = dateY + 60.0 / 2.0
         dateLayer.add(createFadeAnimation(begin: 1.8, duration: 0.5, from: 0, to: 1), forKey: "fade")
         dateLayer.add(createSlideAnimation(begin: 1.8, duration: 0.5, fromY: dateMidY - 30, toY: dateMidY), forKey: "slide")
         
+        // 4. Time Details
         let timeMidY = timeY + 50.0 / 2.0
         timeLayer.add(createFadeAnimation(begin: 2.2, duration: 0.5, from: 0, to: 1), forKey: "fade")
         timeLayer.add(createSlideAnimation(begin: 2.2, duration: 0.5, fromY: timeMidY - 30, toY: timeMidY), forKey: "slide")
         
+        // 5. Venue Name
         let venMidY = venY + 70.0 / 2.0
         venueLayer.add(createFadeAnimation(begin: 2.8, duration: 0.5, from: 0, to: 1), forKey: "fade")
         venueLayer.add(createSlideAnimation(begin: 2.8, duration: 0.5, fromY: venMidY - 40, toY: venMidY), forKey: "slide")
         
+        // 6. City & Country
         let cityMidY = cityY + 50.0 / 2.0
         cityLayer.add(createFadeAnimation(begin: 3.2, duration: 0.5, from: 0, to: 1), forKey: "fade")
         cityLayer.add(createSlideAnimation(begin: 3.2, duration: 0.5, fromY: cityMidY - 30, toY: cityMidY), forKey: "slide")
         
-        addressLayer.add(createFadeAnimation(begin: 3.8, duration: 0.5, from: 0, to: 1), forKey: "fade")
+        // 7. Address
+        addressLayer.add(createFadeAnimation(begin: 3.6, duration: 0.5, from: 0, to: 1), forKey: "fade")
         
-        // Animate the backing container pill to fade in smoothly right before logos
+        // 8. Sponsor Backing container pill fades in right before individual logos
         backingLayer.add(createFadeAnimation(begin: 4.0, duration: 0.4, from: 0, to: 1), forKey: "fade")
         
-        docLayer.add(createFadeAnimation(begin: 4.4, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        metropoleLayer.add(createFadeAnimation(begin: 4.6, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        dukerLayer.add(createFadeAnimation(begin: 4.8, duration: 0.5, from: 0, to: 1), forKey: "fade")
+        // 9. Individual sponsor logos fade in sequentially
+        docLayer.add(createFadeAnimation(begin: 4.3, duration: 0.5, from: 0, to: 1), forKey: "fade")
+        metropoleLayer.add(createFadeAnimation(begin: 4.5, duration: 0.5, from: 0, to: 1), forKey: "fade")
+        dukerLayer.add(createFadeAnimation(begin: 4.7, duration: 0.5, from: 0, to: 1), forKey: "fade")
     }
 }
 

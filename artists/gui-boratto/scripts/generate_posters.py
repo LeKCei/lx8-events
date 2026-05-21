@@ -55,6 +55,21 @@ def create_gradient_mask(width, height, start_y, end_y):
         draw.rectangle([(0, end_y), (width, height)], fill=255)
     return mask
 
+def truncate_text(draw, text, font, max_width):
+    if not text:
+        return ""
+    w = draw.textlength(text, font=font) if hasattr(draw, 'textlength') else draw.textsize(text, font=font)[0]
+    if w <= max_width:
+        return text
+    truncated = text
+    while len(truncated) > 0:
+        truncated = truncated[:-1]
+        test_str = truncated + "..."
+        test_w = draw.textlength(test_str, font=font) if hasattr(draw, 'textlength') else draw.textsize(test_str, font=font)[0]
+        if test_w <= max_width:
+            return test_str
+    return "..."
+
 def render_dates_table(draw, dates, start_x, start_y, row_height, font_regular, font_bold, width):
     # Renders the tour dates in a clean table format.
     # - Day: Bold, Left-aligned at 6% of width
@@ -67,6 +82,8 @@ def render_dates_table(draw, dates, start_x, start_y, row_height, font_regular, 
     x_venue = int(width * 0.20)
     x_city_end = int(width * 0.78)
     x_country_end = int(width * 0.94)
+    
+    max_venue_w = int(width * 0.42) # Safe 42% width allocated for venue before colliding with city
 
     y = start_y
     for day, month, venue, city, country in dates:
@@ -76,12 +93,16 @@ def render_dates_table(draw, dates, start_x, start_y, row_height, font_regular, 
         # Draw Month
         draw.text((x_month, y), month, fill=(255, 255, 255, 255), font=font_regular)
         
-        # Draw Venue
-        draw.text((x_venue, y), venue, fill=(255, 255, 255, 255), font=font_bold)
-        
         # Draw City (right-aligned to x_city_end)
         city_w = draw.textlength(city, font=font_bold) if hasattr(draw, 'textlength') else draw.textsize(city, font=font_bold)[0]
         draw.text((x_city_end - city_w, y), city, fill=(255, 255, 255, 255), font=font_bold)
+        
+        # Calculate dynamic max width for venue to prevent collisions (leaving at least a 30px gap)
+        max_venue_w = (x_city_end - city_w - 30) - x_venue
+        
+        # Draw Venue (with safety truncation to prevent overlaps)
+        truncated_venue = truncate_text(draw, venue, font_bold, max_venue_w)
+        draw.text((x_venue, y), truncated_venue, fill=(255, 255, 255, 255), font=font_bold)
         
         # Draw Country (right-aligned to x_country_end)
         country_w = draw.textlength(country, font=font_regular) if hasattr(draw, 'textlength') else draw.textsize(country, font=font_regular)[0]
@@ -216,8 +237,29 @@ def generate_social_images():
     
     start_x_logos = (post_w - total_w_bottom) // 2
     y_logos = 1240
-    current_x = start_x_logos
     
+    # Premium translucent backing container pill for extreme legibility (matching video editor exactly!)
+    padding_x = 36
+    padding_y = 12
+    pill_x0 = start_x_logos - padding_x
+    pill_y0 = y_logos - padding_y
+    pill_x1 = start_x_logos + total_w_bottom + padding_x
+    pill_y1 = y_logos + logo_h_bottom + padding_y
+    radius = (logo_h_bottom + 2 * padding_y) // 2
+    
+    # Draw dark translucent rounded backing pill on a separate high-contrast alpha layer
+    backing_pill = Image.new('RGBA', (post_w, post_h), (0, 0, 0, 0))
+    pill_draw = ImageDraw.Draw(backing_pill)
+    pill_draw.rounded_rectangle(
+        [pill_x0, pill_y0, pill_x1, pill_y1],
+        radius=radius,
+        fill=(0, 0, 0, 166),       # 65% opacity black
+        outline=(255, 255, 255, 38), # 15% opacity white border
+        width=1
+    )
+    post_composite = Image.alpha_composite(post_composite, backing_pill)
+    
+    current_x = start_x_logos
     for l_resized in resized_bottom_logos:
         post_composite.paste(l_resized, (current_x, y_logos), l_resized)
         current_x += l_resized.width + 30
@@ -297,8 +339,29 @@ def generate_social_images():
     
     start_x_logos_story = (story_w - total_w_bottom_story) // 2
     y_logos_story = 1790
-    current_x_story = start_x_logos_story
     
+    # Premium translucent backing container pill for extreme legibility (matching video editor exactly!)
+    padding_x_story = 40
+    padding_y_story = 12
+    pill_story_x0 = start_x_logos_story - padding_x_story
+    pill_story_y0 = y_logos_story - padding_y_story
+    pill_story_x1 = start_x_logos_story + total_w_bottom_story + padding_x_story
+    pill_story_y1 = y_logos_story + logo_h_bottom_story + padding_y_story
+    radius_story = (logo_h_bottom_story + 2 * padding_y_story) // 2
+    
+    # Draw dark translucent rounded backing pill on a separate high-contrast alpha layer
+    backing_pill_story = Image.new('RGBA', (story_w, story_h), (0, 0, 0, 0))
+    pill_story_draw = ImageDraw.Draw(backing_pill_story)
+    pill_story_draw.rounded_rectangle(
+        [pill_story_x0, pill_story_y0, pill_story_x1, pill_story_y1],
+        radius=radius_story,
+        fill=(0, 0, 0, 166),       # 65% opacity black
+        outline=(255, 255, 255, 38), # 15% opacity white border
+        width=1
+    )
+    story_composite = Image.alpha_composite(story_composite, backing_pill_story)
+    
+    current_x_story = start_x_logos_story
     for l_resized in resized_bottom_logos_story:
         story_composite.paste(l_resized, (current_x_story, y_logos_story), l_resized)
         current_x_story += l_resized.width + 40
