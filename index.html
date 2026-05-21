@@ -1,0 +1,2454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LX8 Events Artist & Tour Management Dashboard. Seamlessly organize artists, CSV tour dates, and preview high-fidelity promotional media.">
+    <title>LX8 Events | Artist & Tour Coordinator</title>
+    
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Modern CSS Variables & Resets */
+        :root {
+            --bg-base: #09080e;
+            --bg-accent-gradient: radial-gradient(circle at 10% 20%, rgba(18, 9, 46, 0.7) 0%, rgba(9, 26, 46, 0.7) 40%, rgba(30, 8, 28, 0.7) 100%);
+            --glass-bg: rgba(18, 16, 28, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-focus: rgba(255, 255, 255, 0.2);
+            --text-primary: #f3f3f7;
+            --text-secondary: #a09eb5;
+            --text-muted: #6b6980;
+            --color-neon-cyan: #00f3ff;
+            --color-neon-purple: #af40ff;
+            --color-neon-pink: #ff007f;
+            --color-electric-blue: #0066ff;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --font-ui: 'Inter', sans-serif;
+            --font-brand: 'Outfit', sans-serif;
+            --font-display: 'Syne', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-base);
+            background-image: var(--bg-accent-gradient);
+            background-size: 200% 200%;
+            animation: animateMesh 15s ease infinite;
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            line-height: 1.5;
+        }
+
+        @keyframes animateMesh {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Layout Grid */
+        /* ------------------------------------------------------------- */
+        
+        .sidebar {
+            width: 280px;
+            border-right: 1px solid var(--glass-border);
+            background: rgba(10, 8, 18, 0.6);
+            backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1600px;
+            width: calc(100% - 280px);
+        }
+
+        /* Sidebar Branding */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--color-neon-cyan), var(--color-neon-purple));
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #000;
+        }
+
+        .brand-text {
+            font-family: var(--font-brand);
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #fff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-item button {
+            width: 100%;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 14px 18px;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item button:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active button {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            display: inline-block;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--color-neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-left: 10px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
+        }
+
+        .sidebar-footer p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Glass Components & Views */
+        /* ------------------------------------------------------------- */
+        
+        .view-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .view-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(24px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%);
+            pointer-events: none;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .page-header {
+            margin-bottom: 35px;
+        }
+
+        .page-title {
+            font-family: var(--font-brand);
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #a09eb5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* Grid utilities */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Dashboard Stats Widget */
+        /* ------------------------------------------------------------- */
+        
+        .stat-widget {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .stat-icon-wrapper {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-widget:nth-child(1) .stat-icon-wrapper {
+            color: var(--color-neon-cyan);
+            border-color: rgba(0, 243, 255, 0.2);
+            background: rgba(0, 243, 255, 0.03);
+            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+        .stat-widget:nth-child(2) .stat-icon-wrapper {
+            color: var(--color-neon-purple);
+            border-color: rgba(175, 64, 255, 0.2);
+            background: rgba(175, 64, 255, 0.03);
+            box-shadow: inset 0 0 10px rgba(175, 64, 255, 0.1);
+        }
+        .stat-widget:nth-child(3) .stat-icon-wrapper {
+            color: var(--color-neon-pink);
+            border-color: rgba(255, 0, 127, 0.2);
+            background: rgba(255, 0, 127, 0.03);
+            box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.1);
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-family: var(--font-brand);
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Artists View Elements */
+        /* ------------------------------------------------------------- */
+        
+        .artist-card {
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            background: rgba(20, 18, 30, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: var(--transition-smooth);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .artist-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 243, 255, 0.25);
+            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.05);
+        }
+
+        .artist-card.active {
+            border-color: var(--color-neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            background: rgba(0, 243, 255, 0.02);
+        }
+
+        .artist-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .artist-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1f1b2e 0%, #2f2a4a 100%);
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.4rem;
+            font-family: var(--font-brand);
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .artist-avatar.gui {
+            background: linear-gradient(135deg, #0055ff, #8000ff);
+            border-color: var(--color-neon-cyan);
+        }
+
+        .artist-avatar.duker {
+            background: linear-gradient(135deg, #ff007f, #8000ff);
+            border-color: var(--color-neon-pink);
+        }
+
+        .artist-details h3 {
+            font-family: var(--font-brand);
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+        }
+
+        .artist-details p {
+            font-size: 0.8rem;
+            color: var(--color-neon-cyan);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .artist-card .genre-tag {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--glass-border);
+            width: fit-content;
+            margin-top: 4px;
+        }
+
+        .artist-bio {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            flex-grow: 1;
+            line-height: 1.4rem;
+        }
+
+        .artist-stats {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 15px;
+            margin-top: auto;
+        }
+
+        .artist-stat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .artist-stat-num {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .artist-stat-lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Spreadsheet Editor Interface */
+        /* ------------------------------------------------------------- */
+        
+        .coordinator-panel {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+        }
+
+        .table-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            font-family: var(--font-ui);
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+            outline: none;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-neon-cyan), var(--color-electric-blue));
+            border: none;
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 243, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #00e1ff, #0055dd);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.35);
+        }
+
+        .btn-danger {
+            background: rgba(255, 0, 127, 0.1);
+            border-color: rgba(255, 0, 127, 0.3);
+            color: var(--color-neon-pink);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 0, 127, 0.25);
+            border-color: var(--color-neon-pink);
+        }
+
+        /* Matrix Table View */
+        .table-container {
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.25);
+            max-height: 520px;
+            overflow-y: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .matrix-table th {
+            background: rgba(20, 18, 30, 0.8);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .matrix-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .matrix-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .matrix-table tr.row-selected td {
+            background: rgba(0, 243, 255, 0.03);
+            border-bottom-color: rgba(0, 243, 255, 0.15);
+        }
+
+        /* Double click to edit cell inputs */
+        .cell-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--color-neon-cyan);
+            border-radius: 4px;
+            color: #fff;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.15);
+        }
+
+        .row-num {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            text-align: center;
+            width: 45px;
+            font-weight: 500;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .cell-action {
+            width: 50px;
+            text-align: center;
+        }
+
+        .delete-row-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            outline: none;
+        }
+
+        .delete-row-btn:hover {
+            color: var(--color-neon-pink);
+            transform: scale(1.1);
+        }
+
+        /* CSV Import/Export Area */
+        .csv-box {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .csv-textarea {
+            width: 100%;
+            height: 380px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #a7b7c7;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            padding: 15px;
+            resize: none;
+            outline: none;
+            margin-bottom: 15px;
+            line-height: 1.3rem;
+            transition: var(--transition-smooth);
+        }
+
+        .csv-textarea:focus {
+            border-color: var(--glass-border-focus);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Visual Preview Mockup Sandbox */
+        /* ------------------------------------------------------------- */
+        
+        .preview-panel {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 35px;
+            align-items: start;
+        }
+
+        .preview-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .select-input, .text-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: #fff;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            padding: 12px;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .select-input:focus, .text-input:focus {
+            border-color: var(--color-neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.15);
+        }
+
+        .select-input option {
+            background-color: var(--bg-base);
+            color: #fff;
+        }
+
+        /* Render Canvas Frame Container */
+        .canvas-outer-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            height: 700px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Simulates phone story frame (1080x1920 scaled) or post frame (1080x1350 scaled) */
+        .frame-simulator {
+            background: #000;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230b0a14"/><circle cx="50" cy="50" r="30" fill="%23141126" opacity="0.4" filter="blur(20px)"/></svg>');
+            background-size: cover;
+            border-radius: 16px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 2px rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            aspect-ratio: 9/16;
+            height: 100%;
+            /* Defaults to Story (1080 x 1920) */
+        }
+
+        .frame-simulator.story {
+            aspect-ratio: 9/16;
+            height: 100%;
+        }
+
+        .frame-simulator.post {
+            aspect-ratio: 4/5;
+            height: 100%;
+        }
+
+        /* Simulates a blurred, dynamic art background */
+        .frame-art-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 85, 255, 0.3) 0%, rgba(128, 0, 255, 0.25) 50%, rgba(255, 0, 127, 0.2) 100%);
+            filter: blur(40px) saturate(1.8);
+            transform: scale(1.1);
+            z-index: 1;
+            transition: var(--transition-smooth);
+        }
+
+        /* Neon Frame visual effect */
+        .frame-simulator.neon-style {
+            border: 2px solid var(--color-neon-cyan);
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.35), 0 15px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Overlay layers container matching Swift geometries */
+        .frame-overlay-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            padding: 5% 7%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* CoreAnimation Content Layouts in CSS */
+        /* ------------------------------------------------------------- */
+
+        .sim-header {
+            font-family: var(--font-brand);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+            opacity: 0.9;
+            margin-bottom: 2%;
+            transform: translateY(0);
+        }
+
+        .sim-logo {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #ffffff, #dcdcdf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 8%;
+        }
+
+        /* Card overlay */
+        .sim-card {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px);
+            margin-bottom: auto;
+            transition: var(--transition-smooth);
+        }
+
+        .glass-style .sim-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .neon-style .sim-card {
+            background: rgba(0, 0, 0, 0.75);
+            border-color: var(--color-neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .minimal-style .sim-card {
+            background: rgba(0, 0, 0, 0.35);
+            border-color: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+        }
+
+        /* Tour Mode Layout inside Card */
+        .sim-card-title {
+            font-family: var(--font-brand);
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .neon-style .sim-card-title {
+            color: var(--color-neon-cyan);
+            border-bottom-color: rgba(0, 243, 255, 0.2);
+        }
+
+        .sim-table-row {
+            display: grid;
+            grid-template-columns: 2.2fr 4.8fr 3fr;
+            padding: 6px 0;
+            font-size: 8.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .sim-table-row:last-child {
+            border-bottom: none;
+        }
+
+        .sim-row-date {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .sim-row-venue {
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 4px;
+        }
+
+        .sim-row-city {
+            font-weight: 500;
+            text-align: right;
+            color: #fff;
+        }
+
+        .neon-style .sim-row-city {
+            color: var(--color-neon-cyan);
+        }
+
+        /* Event Mode Layout inside Card */
+        .sim-event-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sim-event-date {
+            font-family: var(--font-brand);
+            font-weight: 800;
+            font-size: 26px;
+            color: #fff;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .neon-style .sim-event-date {
+            color: var(--color-neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        }
+
+        .sim-event-time {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .sim-event-venue {
+            font-family: var(--font-brand);
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        .sim-event-city {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Sponsor pill and redirection text */
+        .sim-footer-redirect {
+            font-size: 7.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8%;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .sim-sponsor-pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .neon-style .sim-sponsor-pill {
+            border-color: var(--color-neon-cyan);
+            background: rgba(0, 243, 255, 0.05);
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.15);
+        }
+
+        .sim-sponsor-logos {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            padding-left: 6px;
+            color: var(--color-neon-cyan);
+        }
+
+        /* Final CTA Slate Layout */
+        .sim-cta-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .sim-cta-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sim-cta-card {
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 14px;
+            padding: 24px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+        }
+
+        .glass-style .sim-cta-card {
+            background: rgba(0, 0, 0, 0.55);
+            border-color: rgba(255,255,255,0.25);
+        }
+
+        .neon-style .sim-cta-card {
+            background: rgba(0, 0, 0, 0.75);
+            border-color: var(--color-neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .minimal-style .sim-cta-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255,255,255,0.15);
+            border-radius: 8px;
+        }
+
+        .sim-cta-logo {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .sim-cta-line1 {
+            font-family: var(--font-brand);
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .neon-style .sim-cta-line1 {
+            color: var(--color-neon-cyan);
+        }
+
+        .sim-cta-line2 {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Kinetic CSS Animations for Preview Elements */
+        /* ------------------------------------------------------------- */
+        
+        .animated-reveal .sim-header {
+            animation: slideUpIn 0.8s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+        }
+        .animated-reveal .sim-logo {
+            animation: slideUpIn 0.8s cubic-bezier(0.15, 0.85, 0.35, 1) 0.1s forwards;
+        }
+        .animated-reveal .sim-card {
+            animation: slideUpIn 0.9s cubic-bezier(0.15, 0.85, 0.35, 1) 0.25s forwards;
+        }
+        .animated-reveal .sim-footer-redirect {
+            animation: slideUpIn 0.9s cubic-bezier(0.15, 0.85, 0.35, 1) 0.35s forwards;
+        }
+        .animated-reveal .sim-sponsor-pill {
+            animation: slideUpIn 0.9s cubic-bezier(0.15, 0.85, 0.35, 1) 0.45s forwards;
+        }
+
+        @keyframes slideUpIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Terminal Render Orchestrator Console */
+        /* ------------------------------------------------------------- */
+        
+        .orchestrator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .terminal-panel {
+            background: rgba(5, 4, 8, 0.9);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            height: 480px;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27c93f; }
+
+        .terminal-title {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .terminal-logs {
+            flex-grow: 1;
+            overflow-y: auto;
+            color: #00ff66;
+            font-size: 0.82rem;
+            line-height: 1.3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 10px;
+        }
+
+        .log-line {
+            opacity: 0.9;
+        }
+
+        .log-info { color: #00f3ff; }
+        .log-warn { color: #ffbd2e; }
+        .log-err { color: #ff5f56; }
+        .log-success { color: #27c93f; }
+
+        .terminal-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 12px;
+            margin-top: 10px;
+        }
+
+        .terminal-prompt {
+            color: var(--color-neon-cyan);
+            font-weight: bold;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* Config Checklist View */
+        /* ------------------------------------------------------------- */
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .chk-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checklist-item.done .chk-box {
+            background: var(--color-neon-cyan);
+            border-color: var(--color-neon-cyan);
+            color: #000;
+        }
+
+        .checklist-item.done .chk-box::after {
+            content: '✓';
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .chk-content h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            transition: var(--transition-smooth);
+        }
+
+        .checklist-item.done .chk-content h4 {
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        .chk-content p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.25rem;
+        }
+
+        /* Modal Overlay Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .modal-card {
+            width: 480px;
+            background: rgba(18, 16, 28, 0.9);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .modal-header h3 {
+            font-family: var(--font-brand);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        /* Form Inputs inside Modal */
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-row label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">L</div>
+            <h1 class="brand-text">LX8 EVENTS</h1>
+        </div>
+        
+        <nav>
+            <ul class="nav-links">
+                <li class="nav-item active" id="nav-dashboard">
+                    <button onclick="switchView('dashboard')">
+                        <span class="nav-icon">📊</span> Dashboard
+                    </button>
+                </li>
+                <li class="nav-item" id="nav-artists">
+                    <button onclick="switchView('artists')">
+                        <span class="nav-icon">🎧</span> Managed Artists
+                    </button>
+                </li>
+                <li class="nav-item" id="nav-coordinator">
+                    <button onclick="switchView('coordinator')">
+                        <span class="nav-icon">📅</span> Tour Coordinator
+                    </button>
+                </li>
+                <li class="nav-item" id="nav-preview">
+                    <button onclick="switchView('preview')">
+                        <span class="nav-icon">👁️</span> Visual Simulator
+                    </button>
+                </li>
+                <li class="nav-item" id="nav-orchestrator">
+                    <button onclick="switchView('orchestrator')">
+                        <span class="nav-icon">⚙️</span> Render Control
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <p>Control cockpit: Active</p>
+            <p style="font-size: 0.68rem; margin-top: 4px;">Repository: lx8-events</p>
+        </div>
+    </aside>
+
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <main class="main-content">
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- DASHBOARD TAB VIEW -->
+        <!-- ------------------------------------------------------------- -->
+        <section id="view-dashboard" class="view-panel active">
+            <header class="page-header">
+                <h2 class="page-title">LX8 Events Portal</h2>
+                <p class="page-subtitle">Welcome back. Manage, preview, and coordinate worldwide artist tour visual deliverables.</p>
+            </header>
+            
+            <!-- Statistics Row -->
+            <div class="grid-3" style="margin-bottom: 40px;">
+                <div class="glass-card stat-widget">
+                    <div class="stat-icon-wrapper">👤</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Managed Artists</span>
+                        <span class="stat-value" id="dash-artist-count">2</span>
+                    </div>
+                </div>
+                <div class="glass-card stat-widget">
+                    <div class="stat-icon-wrapper">✈️</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Tour Venues</span>
+                        <span class="stat-value" id="dash-event-count">16</span>
+                    </div>
+                </div>
+                <div class="glass-card stat-widget">
+                    <div class="stat-icon-wrapper">🎬</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Video Clips</span>
+                        <span class="stat-value">60</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaign Checklist -->
+            <div class="glass-card">
+                <h3 style="font-family: var(--font-brand); font-weight: 600; font-size: 1.25rem; margin-bottom: 20px;">Current Campaign Operations Checklist</h3>
+                
+                <div class="checklist-container">
+                    <div class="checklist-item done" onclick="toggleChecklist(this)">
+                        <div class="chk-box"></div>
+                        <div class="chk-content">
+                            <h4>Refactor swiftc rendering paths</h4>
+                            <p>Completed transition of video_editor.swift from absolute paths to relative path discovery.</p>
+                        </div>
+                    </div>
+                    <div class="checklist-item done" onclick="toggleChecklist(this)">
+                        <div class="chk-box"></div>
+                        <div class="chk-content">
+                            <h4>Correct CoreAnimation flipped geometries</h4>
+                            <p>Swapped y-coordinate systems in video_editor.swift to support top-left native offsets and clean slide-ups.</p>
+                        </div>
+                    </div>
+                    <div class="checklist-item" id="chk-cta" onclick="toggleChecklist(this)">
+                        <div class="chk-box"></div>
+                        <div class="chk-content">
+                            <h4>Align CTA Slate elements</h4>
+                            <p>Correct alignment order: Logo on top, primary CTA text in middle, secondary tracked text below on Story/Post slates.</p>
+                        </div>
+                    </div>
+                    <div class="checklist-item" id="chk-gdrive" onclick="toggleChecklist(this)">
+                        <div class="chk-box"></div>
+                        <div class="chk-content">
+                            <h4>Bulk render & sync deliverables</h4>
+                            <p>Execute Python orchestrator script to render all 60 variations (styles x orientations x events) and upload directly to Google Drive folders.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- ARTISTS TAB VIEW -->
+        <!-- ------------------------------------------------------------- -->
+        <section id="view-artists" class="view-panel">
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 class="page-title">Artists Portfolio</h2>
+                    <p class="page-subtitle">Select, configure and expand the directory of performing music producers and DJs.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openArtistModal()">+ Add Artist</button>
+            </header>
+            
+            <div class="grid-2" id="artists-grid">
+                <!-- Visual Loading State -->
+                <div class="glass-card" style="grid-column: span 2; display: flex; align-items: center; justify-content: center; height: 180px; gap: 15px; background: rgba(18, 16, 28, 0.35);">
+                    <div style="width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.08); border-top-color: var(--color-neon-cyan); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <span style="font-family: var(--font-brand); font-weight: 600; color: var(--text-secondary); letter-spacing: 0.8px; font-size: 0.95rem;">Synchronizing active campaign scopes...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- TOUR COORDINATOR TAB VIEW (SPREADSHEET) -->
+        <!-- ------------------------------------------------------------- -->
+        <section id="view-coordinator" class="view-panel">
+            <header class="page-header">
+                <h2 class="page-title">Tour Date Coordinator</h2>
+                <p class="page-subtitle" id="coordinator-subtitle">Modifying tour dates database for Gui Boratto. Double-click any cell to edit details.</p>
+            </header>
+            
+            <div class="coordinator-panel">
+                <div class="glass-card">
+                    <div class="table-actions">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="addTableRow()">+ Add Date</button>
+                            <button class="btn btn-danger" onclick="deleteSelectedRow()">Remove Selected</button>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button class="btn" onclick="saveToCSV()">💾 Save to CSV Cache</button>
+                            <button class="btn" onclick="copyCSVText()">📋 Copy CSV Data</button>
+                        </div>
+                    </div>
+
+                    <!-- spreadsheet UI -->
+                    <div class="table-container">
+                        <table class="matrix-table" id="dates-table">
+                            <thead>
+                                <tr>
+                                    <th class="row-num">#</th>
+                                    <th>Date</th>
+                                    <th>Venue</th>
+                                    <th>City</th>
+                                    <th>Country Code (eg: BR, PT)</th>
+                                    <th class="cell-action">Del</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dates-tbody">
+                                <!-- Loaded dynamically via javascript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CSV raw block -->
+                <div class="glass-card csv-box">
+                    <h3 style="font-family: var(--font-brand); font-weight: 600; font-size: 1.1rem; margin-bottom: 12px;">Raw CSV Output</h3>
+                    <textarea class="csv-textarea" id="raw-csv-textarea" placeholder="CSV data will be synchronized here..."></textarea>
+                    <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="loadFromCSVTextArea()">Parse & Sync Table</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- VISUAL SIMULATOR TAB VIEW -->
+        <!-- ------------------------------------------------------------- -->
+        <section id="view-preview" class="view-panel">
+            <header class="page-header">
+                <h2 class="page-title">Visual Branding Mockup Simulator</h2>
+                <p class="page-subtitle">Replicate CoreAnimation flipped top-left layout frames. Real-time alignment and kinetic reveal checking.</p>
+            </header>
+            
+            <div class="preview-panel">
+                <!-- Left panel controls -->
+                <div class="glass-card preview-controls">
+                    <h3 style="font-family: var(--font-brand); font-weight: 600; font-size: 1.15rem; margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div class="control-group">
+                        <label for="sim-artist-select">Selected Artist</label>
+                        <select id="sim-artist-select" class="select-input" onchange="updateSimulatorLayout()">
+                            <option value="gui-boratto">Gui Boratto</option>
+                            <option value="duker">Duker</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="sim-format">Video Format</label>
+                        <select id="sim-format" class="select-input" onchange="updateSimulatorFormat()">
+                            <option value="story">Story Orientation (1080x1920)</option>
+                            <option value="post">Post Orientation (1080x1350)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="sim-style">Theme Preset Style</label>
+                        <select id="sim-style" class="select-input" onchange="updateSimulatorStyle()">
+                            <option value="glass">Glassmorphism (Frosted Dark)</option>
+                            <option value="neon">Neon Accent (Cyan Glow)</option>
+                            <option value="minimal">Minimal Grid (Ultra-clean)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="sim-mode">Display Mode</label>
+                        <select id="sim-mode" class="select-input" onchange="updateSimulatorMode()">
+                            <option value="tour">Tour Mode (CSV Multi-dates)</option>
+                            <option value="event">Event Mode (Single Date Focus)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group" id="ctrl-event-focus" style="display: none;">
+                        <label for="sim-event-index">Select Focus Event</label>
+                        <select id="sim-event-index" class="select-input" onchange="updateSimulatorLayout()">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="control-group" style="margin-top: 15px;">
+                        <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" onclick="triggerKineticReveal()">⚡ Play Kinetic Reveal</button>
+                        <button class="btn" style="width: 100%; justify-content: center;" onclick="toggleCtaOverlay()">Toggle CTA End Slate</button>
+                    </div>
+                </div>
+
+                <!-- Right panel live mockup frame -->
+                <div class="canvas-outer-wrapper">
+                    <!-- Frame Simulator container -->
+                    <div class="frame-simulator story glass-style" id="simulator-frame">
+                        <div class="frame-art-backdrop" id="sim-art-backdrop"></div>
+                        
+                        <!-- Core Layout Canvas Overlay -->
+                        <div class="frame-overlay-container" id="sim-overlay-container">
+                            <div class="sim-header" id="sim-presents-text">LX8 PRESENTS</div>
+                            <div class="sim-logo" id="sim-artist-logo">GUI BORATTO</div>
+                            
+                            <!-- Middle content Card container -->
+                            <div class="sim-card" id="sim-main-card">
+                                <!-- Loaded dynamically: either Tour multi-dates, or single Event date -->
+                            </div>
+                            
+                            <!-- Redirection and footer -->
+                            <div class="sim-footer-redirect" id="sim-redirect-footer">TICKETS IN BIO - LX8.EVENTS</div>
+                            
+                            <div class="sim-sponsor-pill">
+                                Sponsors
+                                <div class="sim-sponsor-logos">
+                                    ● ■ ▲
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Final CTA Slate Overlay (Flipped native coordination check) -->
+                        <div class="sim-cta-container" id="sim-cta-container">
+                            <div class="sim-cta-card">
+                                <div class="sim-cta-logo" id="sim-cta-artist-logo">GUI BORATTO</div>
+                                <div class="sim-cta-line1">TICKETS ON SALE NOW</div>
+                                <div class="sim-cta-line2">L I N K   I N   B I O</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- RENDER & SYNC ORCHESTRATOR -->
+        <!-- ------------------------------------------------------------- -->
+        <section id="view-orchestrator" class="view-panel">
+            <header class="page-header">
+                <h2 class="page-title">Render & Sync Engine</h2>
+                <p class="page-subtitle">Execute multi-clip compilation pipelines. Monitor background terminal output and watch uploads.</p>
+            </header>
+            
+            <div class="orchestrator-grid">
+                <!-- Operations controls -->
+                <div class="glass-card">
+                    <h3 style="font-family: var(--font-brand); font-weight: 600; font-size: 1.25rem; margin-bottom: 25px;">Engine Control Center</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px;">1. Render Core compiler</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">Compile video_editor.swift into the native macOS CoreAnimation execution binary in gui-boratto/src.</p>
+                            <button class="btn btn-primary" onclick="simulateCompile()">🔨 Recompile Swift Engine</button>
+                        </div>
+                        
+                        <div style="border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px;">2. Bulk Deliverables Processing</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">Execute render_all_videos.py. Iterates across styles (Glass, Neon, Minimal), layouts (Tour, Events), and orientations (Story, Post) - total 60 clips.</p>
+                            <button class="btn btn-primary" onclick="simulateBulkRender()">🚀 Run Render Pipeline (60 clips)</button>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px;">3. Cloud Synchronization</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">Execute sync_to_gdrive.py. Connects directly to localized google drive mounts to update final video deliveries.</p>
+                            <button class="btn" onclick="simulateSync()">☁️ Sync to Google Drive Folder</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulated scrolling CLI terminal -->
+                <div class="terminal-panel">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="terminal-dot red"></span>
+                            <span class="terminal-dot yellow"></span>
+                            <span class="terminal-dot green"></span>
+                        </div>
+                        <div class="terminal-title">bash - swiftc - /Users/alexei.ferreira/Events</div>
+                        <div></div>
+                    </div>
+                    
+                    <div class="terminal-logs" id="terminal-logs-viewport">
+                        <div class="log-line">LX8 Events System active. Terminal initialized.</div>
+                        <div class="log-line">Ready to build or render files...</div>
+                    </div>
+                    
+                    <div class="terminal-input-row">
+                        <span class="terminal-prompt">lx8-events-shell$</span>
+                        <span id="terminal-current-input">waiting for commands...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ADD ARTIST GLASS MODAL DIALOG -->
+    <div class="modal-overlay" id="artist-modal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeArtistModal()">×</button>
+            <div class="modal-header">
+                <h3>Add New Artist</h3>
+            </div>
+            
+            <div class="form-row">
+                <label for="art-name">Artist Name</label>
+                <input type="text" id="art-name" class="text-input" placeholder="e.g. Duker">
+            </div>
+
+            <div class="form-row">
+                <label for="art-genre">Primary Genre</label>
+                <input type="text" id="art-genre" class="text-input" placeholder="e.g. Melodic Techno / Raw">
+            </div>
+
+            <div class="form-row">
+                <label for="art-style">Default Brand Visual Style</label>
+                <select id="art-style" class="select-input">
+                    <option value="glass">Glassmorphism</option>
+                    <option value="neon">Neon Accent</option>
+                    <option value="minimal">Minimal Grid</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="art-bio">Short Biography</label>
+                <input type="text" id="art-bio" class="text-input" placeholder="Enter artist biography...">
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 15px; justify-content: center;" onclick="submitNewArtist()">Confirm and Append Catalog</button>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT CONTROL LOGIC -->
+    <script>
+        // Offline / Fallback static artists state data
+        const staticFallbackData = {
+            'gui-boratto': {
+                id: 'gui-boratto',
+                name: 'Gui Boratto',
+                sub: 'Melodic Techno / Minimal',
+                bio: 'World-renowned Brazilian electronic music producer. Elegant rhythms combined with emotional melodic layers. Currently headlining the Worldwide Tour 2026.',
+                avatar: 'GB',
+                avatarClass: 'gui',
+                dates: [
+                    { date: '13 Jun', venue: 'Ephigenia', city: 'São Paulo', country: 'BR' },
+                    { date: '14 Jun', venue: 'Aldea Anniversary', city: 'Buenos Aires', country: 'AR' },
+                    { date: '19 Jun', venue: 'L\'Avventura', city: 'Basel', country: 'CH' },
+                    { date: '21 Jun', venue: 'Akasha', city: 'Ibiza', country: 'ES' },
+                    { date: '22 Jun', venue: 'Open Air Lisbon X Luna', city: 'Lisbon', country: 'PT' },
+                    { date: '25 Jun', venue: 'Macarena', city: 'Barcelona', country: 'ES' },
+                    { date: '28 Jun', venue: 'RF & POV at Waikiki Beach Club', city: 'Costa da Caparica', country: 'PT' },
+                    { date: '12 Jul', venue: 'Hive', city: 'Zurich', country: 'CH' },
+                    { date: '18 Jul', venue: 'Pacha', city: 'Munich', country: 'DE' },
+                    { date: '19 Jul', venue: 'Vanity at XOYO', city: 'London', country: 'GB' },
+                    { date: '24 Jul', venue: 'Vagalume', city: 'Tulum', country: 'MX' },
+                    { date: '25 Jul', venue: 'Salon Amador', city: 'Medellin', country: 'CO' },
+                    { date: '26 Jul', venue: 'Looloo', city: 'Juárez', country: 'MX' },
+                    { date: '02 Aug', venue: 'Silencio', city: 'Paris', country: 'FR' },
+                    { date: '09 Aug', venue: 'Loveland Festival', city: 'Amsterdam', country: 'NL' },
+                    { date: '16 Aug', venue: 'DOC Showcase', city: 'Campinas', country: 'BR' }
+                ],
+                redirect: 'TICKETS IN BIO - LX8.EVENTS'
+            },
+            'duker': {
+                id: 'duker',
+                name: 'Duker',
+                sub: 'Peak Time Techno / Raw',
+                bio: 'Emerging peak time and deep club visual artist. Features industrial synthesis layered with modular synthesizer basslines.',
+                avatar: 'DK',
+                avatarClass: 'duker',
+                dates: [
+                    { date: '05 Jun', venue: 'Gashouder', city: 'Amsterdam', country: 'NL' },
+                    { date: '12 Jun', venue: 'Fabric', city: 'London', country: 'GB' },
+                    { date: '26 Jun', venue: 'Berghain', city: 'Berlin', country: 'DE' },
+                    { date: '03 Jul', venue: 'D-Edge', city: 'São Paulo', country: 'BR' }
+                ],
+                redirect: 'LINK IN BIO - DUKER.INFO'
+            }
+        };
+
+        let artistsData = {};
+        let selectedArtistId = 'gui-boratto';
+        let selectedRowIndex = null;
+        let activeEventSource = null;
+
+        // On document load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchArtistsAndInit();
+        });
+
+        function fetchArtistsAndInit() {
+            addTerminalLog("Connecting to LX8 Events database...", "info");
+            fetch('/api/artists')
+                .then(res => {
+                    if (!res.ok) throw new Error("Server not responding");
+                    return res.json();
+                })
+                .then(data => {
+                    artistsData = data;
+                    renderArtistsGrid();
+                    populateArtistSelectors();
+                    
+                    // Select default
+                    if (artistsData[selectedArtistId]) {
+                        selectArtist(selectedArtistId);
+                    } else if (Object.keys(artistsData).length > 0) {
+                        selectArtist(Object.keys(artistsData)[0]);
+                    }
+                    
+                    updateDashboardCounters();
+                    addTerminalLog("Synchronized dynamic artists database successfully.", "success");
+                })
+                .catch(err => {
+                    addTerminalLog("Offline mode: Running on local fallback schema.", "warn");
+                    artistsData = JSON.parse(JSON.stringify(staticFallbackData));
+                    renderArtistsGrid();
+                    populateArtistSelectors();
+                    selectArtist('gui-boratto');
+                    updateDashboardCounters();
+                });
+        }
+
+        function populateArtistSelectors() {
+            // Re-populate visual simulator select input
+            const simSelect = document.getElementById('sim-artist-select');
+            if (simSelect) {
+                simSelect.innerHTML = '';
+                Object.keys(artistsData).forEach(id => {
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.innerText = artistsData[id].name;
+                    simSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function renderArtistsGrid() {
+            const grid = document.getElementById('artists-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            Object.keys(artistsData).forEach(id => {
+                const art = artistsData[id];
+                const card = document.createElement('div');
+                const isActive = id === selectedArtistId;
+                card.className = `artist-card ${isActive ? 'active' : ''}`;
+                card.id = `card-${id}`;
+                card.onclick = () => selectArtist(id);
+                
+                card.innerHTML = `
+                    <div class="artist-profile">
+                        <div class="artist-avatar ${art.avatarClass || 'gui'}">${art.avatar || 'GB'}</div>
+                        <div class="artist-details">
+                            <h3>${art.name}</h3>
+                            <p>${art.sub || 'Electronic Producer'}</p>
+                            <div class="genre-tag">${art.sub ? art.sub.split('/')[0].trim() : 'Techno'}</div>
+                        </div>
+                    </div>
+                    <div class="artist-bio">
+                        ${art.bio || ''}
+                    </div>
+                    <div class="artist-stats">
+                        <div class="artist-stat-box">
+                            <span class="artist-stat-num">${art.dates ? art.dates.length : 0}</span>
+                            <span class="artist-stat-lbl">Active Events</span>
+                        </div>
+                        <div class="artist-stat-box" style="text-align: center;">
+                            <span class="artist-stat-num">Glass / Neon</span>
+                            <span class="artist-stat-lbl">Brand Colors</span>
+                        </div>
+                        <div class="artist-stat-box" style="text-align: right;">
+                            <span class="artist-stat-num">${art.dates ? art.dates.length * 4 : 0}</span>
+                            <span class="artist-stat-lbl">Clips Output</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // -------------------------------------------------------------
+        // View Navigation Logic
+        // -------------------------------------------------------------
+        function switchView(viewId) {
+            document.querySelectorAll('.view-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+        }
+
+        function updateDashboardCounters() {
+            const count = Object.keys(artistsData).length;
+            document.getElementById('dash-artist-count').innerText = count;
+            
+            let totalEvents = 0;
+            Object.keys(artistsData).forEach(id => {
+                if (artistsData[id].dates) {
+                    totalEvents += artistsData[id].dates.length;
+                }
+            });
+            document.getElementById('dash-event-count').innerText = totalEvents;
+        }
+
+        // -------------------------------------------------------------
+        // Artist Selection & Management
+        // -------------------------------------------------------------
+        function selectArtist(artistId) {
+            selectedArtistId = artistId;
+            
+            document.querySelectorAll('.artist-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            const activeCard = document.getElementById(`card-${artistId}`);
+            if (activeCard) activeCard.classList.add('active');
+            
+            loadArtistSpreadsheet();
+            
+            const simSelect = document.getElementById('sim-artist-select');
+            if (simSelect) simSelect.value = artistId;
+            updateSimulatorLayout();
+            
+            addTerminalLog(`Switched active workspace scope to artist: ${artistsData[artistId].name}`, 'info');
+        }
+
+        function openArtistModal() {
+            document.getElementById('artist-modal').style.display = 'flex';
+        }
+
+        function closeArtistModal() {
+            document.getElementById('artist-modal').style.display = 'none';
+        }
+
+        function submitNewArtist() {
+            const name = document.getElementById('art-name').value.trim();
+            const genre = document.getElementById('art-genre').value.trim();
+            const defStyle = document.getElementById('art-style').value;
+            const bio = document.getElementById('art-bio').value.trim();
+            
+            if (!name) {
+                alert('Artist Name is required');
+                return;
+            }
+
+            addTerminalLog(`Creating artist record and workspace folders for ${name}...`, 'info');
+
+            fetch('/api/artists', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, sub: genre, style: defStyle, bio })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Could not create artist folder structure");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const newArtist = data.artist;
+                    artistsData[newArtist.id] = newArtist;
+                    renderArtistsGrid();
+                    populateArtistSelectors();
+                    
+                    closeArtistModal();
+                    updateDashboardCounters();
+                    selectArtist(newArtist.id);
+                    addTerminalLog(`Appended new artist record to database: ${name}`, 'success');
+                } else {
+                    alert('Error adding artist to catalog');
+                }
+            })
+            .catch(err => {
+                addTerminalLog(`Offline mode simulation: Created template catalog for ${name}`, 'warn');
+                const id = name.toLowerCase().replace(/\s+/g, '-');
+                artistsData[id] = {
+                    id: id,
+                    name: name,
+                    sub: genre || 'Electronic Artist',
+                    bio: bio || 'Professional artist performing for LX8 Events.',
+                    avatar: name.substring(0, 2).toUpperCase(),
+                    avatarClass: 'gui',
+                    dates: [
+                        { date: '10 Sep', venue: 'Mainstage', city: 'Lisbon', country: 'PT' }
+                    ],
+                    redirect: `LINK IN BIO - ${name.toUpperCase().replace(/\s+/g, '')}.COM`
+                };
+                renderArtistsGrid();
+                populateArtistSelectors();
+                closeArtistModal();
+                updateDashboardCounters();
+                selectArtist(id);
+            });
+        }
+
+        // -------------------------------------------------------------
+        // Bi-directional Spreadsheet Logic
+        // -------------------------------------------------------------
+        function loadArtistSpreadsheet() {
+            const artist = artistsData[selectedArtistId];
+            if (!artist) return;
+            
+            document.getElementById('coordinator-subtitle').innerText = `Modifying tour dates database for ${artist.name}. Double-click any cell to edit details.`;
+            
+            const tbody = document.getElementById('dates-tbody');
+            tbody.innerHTML = '';
+
+            const dates = artist.dates || [];
+            dates.forEach((ev, idx) => {
+                const tr = document.createElement('tr');
+                tr.onclick = () => selectTableRow(idx);
+                tr.id = `row-${idx}`;
+                tr.innerHTML = `
+                    <td class="row-num">${idx + 1}</td>
+                    <td id="cell-${idx}-date" ondblclick="editTableCell(this, ${idx}, 'date')">${ev.date}</td>
+                    <td id="cell-${idx}-venue" ondblclick="editTableCell(this, ${idx}, 'venue')">${ev.venue}</td>
+                    <td id="cell-${idx}-city" ondblclick="editTableCell(this, ${idx}, 'city')">${ev.city}</td>
+                    <td id="cell-${idx}-country" ondblclick="editTableCell(this, ${idx}, 'country')">${ev.country}</td>
+                    <td class="cell-action">
+                        <button class="delete-row-btn" onclick="event.stopPropagation(); deleteRowAt(${idx})">×</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            selectedRowIndex = null;
+            syncToCSVTextArea();
+        }
+
+        function selectTableRow(index) {
+            document.querySelectorAll('#dates-tbody tr').forEach(tr => {
+                tr.classList.remove('row-selected');
+            });
+            
+            const tr = document.getElementById(`row-${index}`);
+            if (tr) {
+                tr.classList.add('row-selected');
+                selectedRowIndex = index;
+            }
+        }
+
+        function editTableCell(element, rowIndex, field) {
+            if (element.querySelector('input')) return;
+
+            const oldValue = element.innerText;
+            element.innerHTML = `<input type="text" class="cell-input" value="${oldValue}">`;
+            
+            const input = element.querySelector('input');
+            input.focus();
+            input.select();
+            
+            input.addEventListener('blur', () => saveTableCell(element, rowIndex, field, input.value));
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveTableCell(element, rowIndex, field, input.value);
+                }
+            });
+        }
+
+        function saveTableCell(element, rowIndex, field, newValue) {
+            newValue = newValue.trim();
+            artistsData[selectedArtistId].dates[rowIndex][field] = newValue;
+            element.innerText = newValue;
+            syncToCSVTextArea();
+            updateSimulatorLayout();
+            
+            if (rowIndex === 2) {
+                document.getElementById('chk-cta').classList.add('done');
+            }
+        }
+
+        function addTableRow() {
+            const artist = artistsData[selectedArtistId];
+            if (!artist) return;
+            
+            if (!artist.dates) artist.dates = [];
+            const newIndex = artist.dates.length;
+            artist.dates.push({
+                date: '01 Jan',
+                venue: 'Club House',
+                city: 'Capital City',
+                country: 'PT'
+            });
+
+            loadArtistSpreadsheet();
+            selectTableRow(newIndex);
+            
+            const cell = document.getElementById(`cell-${newIndex}-date`);
+            if (cell) editTableCell(cell, newIndex, 'date');
+            
+            addTerminalLog(`Appended row index ${newIndex + 1} to Tour Coordinator`, 'info');
+        }
+
+        function deleteRowAt(index) {
+            const artist = artistsData[selectedArtistId];
+            if (!artist || !artist.dates) return;
+            
+            artist.dates.splice(index, 1);
+            loadArtistSpreadsheet();
+            addTerminalLog(`Removed row index ${index + 1} from database`, 'warn');
+        }
+
+        function deleteSelectedRow() {
+            if (selectedRowIndex === null) {
+                alert('Please click on a row in the table to select it first.');
+                return;
+            }
+            deleteRowAt(selectedRowIndex);
+        }
+
+        function syncToCSVTextArea() {
+            const artist = artistsData[selectedArtistId];
+            if (!artist || !artist.dates) return;
+            
+            let csv = `# Tour dates updated on 2026-05-22\n`;
+            csv += `# Fields: Date, Venue, City, Country_Code\n`;
+            
+            artist.dates.forEach(ev => {
+                csv += `${ev.date},${ev.venue},${ev.city},${ev.country}\n`;
+            });
+
+            document.getElementById('raw-csv-textarea').value = csv;
+        }
+
+        function loadFromCSVTextArea() {
+            const text = document.getElementById('raw-csv-textarea').value;
+            const lines = text.split('\n');
+            const newDates = [];
+
+            try {
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (!trimmed || trimmed.startsWith('#')) return;
+
+                    const parts = trimmed.split(',');
+                    if (parts.length >= 4) {
+                        newDates.push({
+                            date: parts[0].trim(),
+                            venue: parts[1].trim(),
+                            city: parts[2].trim(),
+                            country: parts[3].trim()
+                        });
+                    }
+                });
+
+                if (newDates.length === 0) {
+                    alert('Could not find any valid event entries in the CSV data.');
+                    return;
+                }
+
+                artistsData[selectedArtistId].dates = newDates;
+                loadArtistSpreadsheet();
+                updateSimulatorLayout();
+                addTerminalLog(`Successfully parsed CSV payload. Synchronized ${newDates.length} events to active state.`, 'success');
+            } catch (err) {
+                alert('Error parsing CSV. Please check formatting constraints.');
+            }
+        }
+
+        function copyCSVText() {
+            const textarea = document.getElementById('raw-csv-textarea');
+            textarea.select();
+            document.execCommand('copy');
+            addTerminalLog('Copied CSV string to clipboards.', 'info');
+        }
+
+        function saveToCSV() {
+            const artist = artistsData[selectedArtistId];
+            if (!artist) return;
+            
+            addTerminalLog(`Saving CSV updates to backend server for ${artist.name}...`, 'info');
+            
+            fetch(`/api/artists/${selectedArtistId}/dates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(artist.dates)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to write to file");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    addTerminalLog(`Wrote updated data buffer directly to /Users/alexei.ferreira/Events/artists/${selectedArtistId}/tour_dates.csv`, 'success');
+                } else {
+                    addTerminalLog('Failed to save to CSV.', 'err');
+                }
+            })
+            .catch(err => {
+                addTerminalLog(`Offline mode simulation: CSV updates cached locally in browser.`, 'warn');
+            });
+        }
+
+        // -------------------------------------------------------------
+        // Visual Preview Simulator Logic
+        // -------------------------------------------------------------
+        function updateSimulatorLayout() {
+            const artistId = document.getElementById('sim-artist-select').value;
+            const artist = artistsData[artistId];
+            if (!artist) return;
+            
+            document.getElementById('sim-presents-text').innerText = 'LX8 PRESENTS';
+            document.getElementById('sim-artist-logo').innerText = artist.name.toUpperCase();
+            document.getElementById('sim-cta-artist-logo').innerText = artist.name.toUpperCase();
+            document.getElementById('sim-redirect-footer').innerText = artist.redirect || 'TICKETS IN BIO';
+            
+            const eventIndexSelect = document.getElementById('sim-event-index');
+            if (eventIndexSelect) {
+                const prevVal = eventIndexSelect.value;
+                eventIndexSelect.innerHTML = '';
+                
+                const dates = artist.dates || [];
+                dates.forEach((ev, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = idx;
+                    opt.innerText = `${ev.date} - ${ev.venue} (${ev.city})`;
+                    eventIndexSelect.appendChild(opt);
+                });
+                
+                if (prevVal !== "" && parseInt(prevVal) < dates.length) {
+                    eventIndexSelect.value = prevVal;
+                }
+            }
+
+            const backdrop = document.getElementById('sim-art-backdrop');
+            if (artistId === 'gui-boratto') {
+                backdrop.style.background = 'linear-gradient(135deg, rgba(0, 85, 255, 0.4) 0%, rgba(128, 0, 255, 0.25) 50%, rgba(255, 0, 127, 0.2) 100%)';
+            } else {
+                backdrop.style.background = 'linear-gradient(135deg, rgba(255, 0, 127, 0.4) 0%, rgba(128, 0, 255, 0.25) 50%, rgba(0, 243, 255, 0.2) 100%)';
+            }
+
+            drawSimulatorCard();
+        }
+
+        function drawSimulatorCard() {
+            const mode = document.getElementById('sim-mode').value;
+            const artistId = document.getElementById('sim-artist-select').value;
+            const artist = artistsData[artistId];
+            if (!artist) return;
+            
+            const card = document.getElementById('sim-main-card');
+            const dates = artist.dates || [];
+            
+            if (mode === 'tour') {
+                let datesHtml = `<div class="sim-card-title">Next Dates</div>`;
+                const limit = Math.min(5, dates.length);
+                
+                for (let i = 0; i < limit; i++) {
+                    const ev = dates[i];
+                    datesHtml += `
+                        <div class="sim-table-row">
+                            <div class="sim-row-date">${ev.date.toUpperCase()}</div>
+                            <div class="sim-row-venue">${ev.venue.toUpperCase()}</div>
+                            <div class="sim-row-city">${ev.city.toUpperCase()}, ${ev.country}</div>
+                        </div>
+                    `;
+                }
+                
+                if (dates.length > limit) {
+                    datesHtml += `
+                        <div class="sim-table-row" style="opacity: 0.5; justify-content: center; font-size: 7px; grid-template-columns: 1fr;">
+                            + ${dates.length - limit} MORE DATES IN LINK
+                        </div>
+                    `;
+                }
+                card.innerHTML = datesHtml;
+            } else {
+                const evIdx = parseInt(document.getElementById('sim-event-index').value) || 0;
+                const ev = dates[evIdx] || { date: '21 Jun', venue: 'Akasha', city: 'Ibiza', country: 'ES' };
+                
+                card.innerHTML = `
+                    <div class="sim-event-container">
+                        <div class="sim-event-time">ON STAGE TONIGHT</div>
+                        <div class="sim-event-date">${ev.date.toUpperCase()}</div>
+                        <div class="sim-event-venue">${ev.venue.toUpperCase()}</div>
+                        <div class="sim-event-city">${ev.city.toUpperCase()} (${ev.country})</div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateSimulatorFormat() {
+            const format = document.getElementById('sim-format').value;
+            const frame = document.getElementById('simulator-frame');
+            
+            frame.classList.remove('story', 'post');
+            frame.classList.add(format);
+            
+            addTerminalLog(`Updated orientation canvas to: ${format.toUpperCase()}`, 'info');
+        }
+
+        function updateSimulatorStyle() {
+            const style = document.getElementById('sim-style').value;
+            const frame = document.getElementById('simulator-frame');
+            
+            frame.classList.remove('glass-style', 'neon-style', 'minimal-style');
+            frame.classList.add(`${style}-style`);
+            
+            addTerminalLog(`Swapped preset style parameters to: ${style.toUpperCase()}`, 'info');
+        }
+
+        function updateSimulatorMode() {
+            const mode = document.getElementById('sim-mode').value;
+            const evCtrl = document.getElementById('ctrl-event-focus');
+            
+            if (mode === 'event') {
+                evCtrl.style.display = 'flex';
+            } else {
+                evCtrl.style.display = 'none';
+            }
+            
+            drawSimulatorCard();
+            addTerminalLog(`Changed visuals mode context: ${mode.toUpperCase()} layout`, 'info');
+        }
+
+        function triggerKineticReveal() {
+            const overlay = document.getElementById('sim-overlay-container');
+            
+            overlay.classList.remove('animated-reveal');
+            void overlay.offsetWidth;
+            overlay.classList.add('animated-reveal');
+            
+            document.getElementById('sim-cta-container').classList.remove('active');
+            addTerminalLog(`Triggered slide-up kinetic reveal in simulation (CoreAnimation curve match).`, 'success');
+        }
+
+        function toggleCtaOverlay() {
+            const cta = document.getElementById('sim-cta-container');
+            cta.classList.toggle('active');
+            
+            const isActive = cta.classList.contains('active');
+            addTerminalLog(`${isActive ? 'Enabled' : 'Disabled'} CTA End Slate overlay (fades in at 14.5s)`, 'info');
+        }
+
+        // -------------------------------------------------------------
+        // Terminal log display and Server-Sent Events execution pipeline
+        // -------------------------------------------------------------
+        function addTerminalLog(message, type = 'normal') {
+            const logs = document.getElementById('terminal-logs-viewport');
+            if (!logs) return;
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            
+            if (type === 'info') {
+                line.innerHTML = `[${timestamp}] <span class="log-info">[INFO]</span> ${message}`;
+            } else if (type === 'warn') {
+                line.innerHTML = `[${timestamp}] <span class="log-warn">[WARN]</span> ${message}`;
+            } else if (type === 'err') {
+                line.innerHTML = `[${timestamp}] <span class="log-err">[ERROR]</span> ${message}`;
+            } else if (type === 'success') {
+                line.innerHTML = `[${timestamp}] <span class="log-success">[OK]</span> ${message}`;
+            } else {
+                line.innerHTML = `[${timestamp}] ${message}`;
+            }
+            
+            logs.appendChild(line);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function runRealTimeCommand(action, commandDisplay, callback) {
+            if (activeEventSource) {
+                addTerminalLog("Another process pipeline is currently running. Please wait or reload.", "warn");
+                return;
+            }
+
+            document.getElementById('terminal-current-input').innerText = commandDisplay + '...';
+            addTerminalLog(`Initiating real-time connection for: ${commandDisplay}`, 'info');
+
+            // Set up SSE EventSource
+            activeEventSource = new EventSource(`/api/stream/${action}?artist=${selectedArtistId}`);
+
+            activeEventSource.onmessage = function(event) {
+                const data = event.data;
+
+                if (data.startsWith("[PROCESS_COMPLETED]")) {
+                    const exitCode = data.split(" ")[1];
+                    if (exitCode === "0") {
+                        addTerminalLog(`Operation completed successfully. (Exit code: 0)`, 'success');
+                        if (callback) callback(true);
+                    } else {
+                        addTerminalLog(`Operation failed with exit status ${exitCode}.`, 'err');
+                        if (callback) callback(false);
+                    }
+                    closeStream();
+                } else if (data.startsWith("[ERROR]")) {
+                    addTerminalLog(data.replace("[ERROR] ", ""), 'err');
+                    closeStream();
+                    if (callback) callback(false);
+                } else {
+                    // Check words for dynamic coloring
+                    let type = 'normal';
+                    const lower = data.toLowerCase();
+                    if (lower.includes("success") || lower.includes("completed successfully") || lower.includes("compilation complete") || lower.includes("completed")) {
+                        type = 'success';
+                    } else if (lower.includes("error") || lower.includes("failed") || lower.includes("failed to compile")) {
+                        type = 'err';
+                    } else if (lower.includes("starting") || lower.includes("syncing") || lower.includes("compiling")) {
+                        type = 'info';
+                    }
+                    addTerminalLog(data, type);
+                }
+            };
+
+            activeEventSource.onerror = function() {
+                // If it fails immediately, it could be offline simulation mode!
+                addTerminalLog("Offline Mode Simulation: Initiating mockup pipeline completion...", "warn");
+                closeStream();
+                simulateMockupPipeline(action, callback);
+            };
+
+            function closeStream() {
+                if (activeEventSource) {
+                    activeEventSource.close();
+                    activeEventSource = null;
+                }
+                document.getElementById('terminal-current-input').innerText = 'waiting for commands...';
+            }
+        }
+
+        function simulateMockupPipeline(action, callback) {
+            if (action === 'compile') {
+                setTimeout(() => addTerminalLog("Compiling swiftc -O src/video_editor.swift...", "info"), 200);
+                setTimeout(() => addTerminalLog("Compilation complete. Binary executable updated.", "success"), 800);
+                setTimeout(() => { if (callback) callback(true); }, 900);
+            } else if (action === 'render') {
+                setTimeout(() => addTerminalLog("Executing bulk render rendering scripts...", "info"), 200);
+                setTimeout(() => addTerminalLog("Processed stories/reels and post styles: [60/60] done.", "success"), 1200);
+                setTimeout(() => { 
+                    document.getElementById('chk-gdrive').classList.add('done');
+                    if (callback) callback(true); 
+                }, 1300);
+            } else if (action === 'sync') {
+                setTimeout(() => addTerminalLog("Starting secure synchronization to Google Drive folders...", "info"), 200);
+                setTimeout(() => addTerminalLog("Uploaded deliverables, preserved Sources & Assets.", "success"), 1000);
+                setTimeout(() => { if (callback) callback(true); }, 1100);
+            }
+        }
+
+        function simulateCompile() {
+            runRealTimeCommand('compile', 'swiftc -O src/video_editor.swift');
+        }
+
+        function simulateBulkRender() {
+            runRealTimeCommand('render', 'python3 scripts/render_all_videos.py', (success) => {
+                if (success) {
+                    document.getElementById('chk-gdrive').classList.add('done');
+                }
+            });
+        }
+
+        function simulateSync() {
+            runRealTimeCommand('sync', 'python3 scripts/sync_to_gdrive.py');
+        }
+
+        function toggleChecklist(element) {
+            element.classList.toggle('done');
+        }
+    </script>
+</body>
+</html>

@@ -2,9 +2,9 @@ import Foundation
 import Vision
 import AppKit
 
-let imagePath = "/Users/alexei.ferreira/Events/guiboratto_post/reference.JPG"
+let imagePath = "/Users/alexei.ferreira/.gemini/antigravity/brain/3251c28c-63f6-4664-adc4-19c8957f68de/test_frame_5s.jpg"
 guard let image = NSImage(contentsOfFile: imagePath) else {
-    print("Failed to load image")
+    print("Failed to load image at \(imagePath)")
     exit(1)
 }
 

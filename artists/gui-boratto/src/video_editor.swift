@@ -213,6 +213,7 @@ print("Output video format size: \(videoSize.width) x \(videoSize.height)")
 // CoreAnimation parent render layer
 let parentLayer = CALayer()
 parentLayer.frame = CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
+parentLayer.isGeometryFlipped = true
 
 // Video track frame renderer layer
 let videoLayer = CALayer()
@@ -393,7 +394,7 @@ if mode.hasPrefix("tour") {
         let logoLayer = CALayer()
         let logoW: CGFloat = format == "story" ? 940 : 900
         let logoH: CGFloat = format == "story" ? 80 : 76
-        let logoY: CGFloat = format == "story" ? 1500 : 1080
+        let logoY: CGFloat = format == "story" ? 340 : 194
         logoLayer.frame = CGRect(x: (videoSize.width - logoW) / 2.0, y: logoY, width: logoW, height: logoH)
         logoLayer.contents = logo
         promoContainer.addSublayer(logoLayer)
@@ -401,7 +402,7 @@ if mode.hasPrefix("tour") {
     
     // 2. Tracked Subheader "NEXT DATES"
     let subLayer = CATextLayer()
-    let subY: CGFloat = format == "story" ? 1390 : 1000
+    let subY: CGFloat = format == "story" ? 490 : 310
     let subSize: CGFloat = format == "story" ? 28 : 22
     subLayer.frame = CGRect(x: 80, y: subY, width: 920, height: 40)
     subLayer.string = "N E X T   D A T E S"
@@ -445,8 +446,6 @@ if mode.hasPrefix("tour") {
             ]
         }
         
-        let containerTop: CGFloat = format == "story" ? 1200 : 800
-        
         for (_, (range, startSec, endSec)) in groups.enumerated() {
             let groupContainer = CALayer()
             groupContainer.frame = CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
@@ -467,23 +466,43 @@ if mode.hasPrefix("tour") {
             let gridTopAnim: CGFloat
             if format == "story" {
                 rowHeight = visibleCount > 4 ? 120 : 160
-                gridTopAnim = visibleCount > 4 ? 1250 : containerTop
+                gridTopAnim = visibleCount > 4 ? 550 : 560
             } else {
                 rowHeight = visibleCount > 4 ? 90 : 120
-                gridTopAnim = visibleCount > 4 ? 820 : containerTop
+                gridTopAnim = visibleCount > 4 ? 440 : 430
             }
             
             for (idx, i) in range.enumerated() {
                 if i >= tourDates.count { break }
                 let td = tourDates[i]
-                let rowY = gridTopAnim - CGFloat(idx) * rowHeight
+                let rowY = gridTopAnim + CGFloat(idx) * rowHeight
                 
                 // Bold combined Date/City header
                 let dateLayer = CATextLayer()
                 let dateSizeAnim: CGFloat = format == "story" ? 34 : 26
                 let venueSizeAnim: CGFloat = format == "story" ? 24 : 18
                 
-                dateLayer.frame = CGRect(x: 40, y: rowY + (format == "story" ? 45 : 35), width: videoSize.width - 80, height: 40)
+                let dateYOffset: CGFloat
+                let venueYOffset: CGFloat
+                if format == "story" {
+                    if visibleCount > 4 {
+                        dateYOffset = 20
+                        venueYOffset = 65
+                    } else {
+                        dateYOffset = 40
+                        venueYOffset = 85
+                    }
+                } else {
+                    if visibleCount > 4 {
+                        dateYOffset = 5
+                        venueYOffset = 50
+                    } else {
+                        dateYOffset = 20
+                        venueYOffset = 65
+                    }
+                }
+                
+                dateLayer.frame = CGRect(x: 40, y: rowY + dateYOffset, width: videoSize.width - 80, height: 40)
                 dateLayer.string = "\(td.date.uppercased())  \(td.city.uppercased()), \(td.country)"
                 dateLayer.font = NSFont(name: fontBoldName, size: dateSizeAnim) ?? NSFont.boldSystemFont(ofSize: dateSizeAnim)
                 dateLayer.fontSize = dateSizeAnim
@@ -494,7 +513,7 @@ if mode.hasPrefix("tour") {
                 
                 // Venue details centered below
                 let venueLayer = CATextLayer()
-                venueLayer.frame = CGRect(x: 40, y: rowY, width: videoSize.width - 80, height: 35)
+                venueLayer.frame = CGRect(x: 40, y: rowY + venueYOffset, width: videoSize.width - 80, height: 35)
                 venueLayer.string = td.venue.uppercased()
                 venueLayer.font = NSFont(name: fontRegularName, size: venueSizeAnim) ?? NSFont.systemFont(ofSize: venueSizeAnim)
                 venueLayer.fontSize = venueSizeAnim
@@ -518,19 +537,21 @@ if mode.hasPrefix("tour") {
         let showMoreFooter = tourDates.count > maxVisibleDates
         
         let rowHeight: CGFloat = format == "story" ? 65 : 48
-        let gridTop: CGFloat
+        let gridTop_new: CGFloat
         if isRegional {
             let totalTableHeight = CGFloat(visibleDates.count) * rowHeight + (showMoreFooter ? rowHeight : 0)
             let availableHeight = format == "story" ? (1310.0 - 500.0) : (940.0 - 340.0)
-            gridTop = (format == "story" ? 1310.0 : 940.0) - (availableHeight - totalTableHeight) / 2.0
+            let baseGridTop = format == "story" ? 1310.0 : 940.0
+            let gridTop_old = baseGridTop - (availableHeight - totalTableHeight) / 2.0
+            gridTop_new = videoSize.height - gridTop_old - rowHeight
         } else {
-            gridTop = format == "story" ? 1310 : 940
+            gridTop_new = format == "story" ? 545 : 362
         }
         
         let fontSize: CGFloat = format == "story" ? 22 : 18
         
         for (i, td) in visibleDates.enumerated() {
-            let rowY = gridTop - CGFloat(i) * rowHeight
+            let rowY = gridTop_new + CGFloat(i) * rowHeight
             
             // 1. Date Column (Bold, left-aligned)
             let dateColLayer = CATextLayer()
@@ -570,7 +591,7 @@ if mode.hasPrefix("tour") {
         
         // 4. Redirection Footer (Guides users to view the rest of the dates online)
         if showMoreFooter {
-            let footerY = gridTop - CGFloat(visibleDates.count) * rowHeight - 20
+            let footerY = gridTop_new + CGFloat(visibleDates.count) * rowHeight + 20
             let footerLayer = CATextLayer()
             let footerFontSize = fontSize - 2
             footerLayer.frame = CGRect(x: 100, y: footerY, width: 880, height: rowHeight)
@@ -585,7 +606,7 @@ if mode.hasPrefix("tour") {
     }
     
     // 3. Center Aligned Sponsor Logos at bottom
-    let sponsorY: CGFloat = format == "story" ? 400 : 190
+    let sponsorY: CGFloat = format == "story" ? 1484 : 1130
     let sponsorH: CGFloat = format == "story" ? 36 : 30
     let gap: CGFloat = format == "story" ? 40 : 30
     
@@ -637,7 +658,7 @@ if mode.hasPrefix("tour") {
     
     // 1. Presents header
     let presentsLayer = CATextLayer()
-    let presY: CGFloat = format == "story" ? 1520 : 1110
+    let presY: CGFloat = format == "story" ? 360 : 200
     let presSize: CGFloat = format == "story" ? 24 : 20
     presentsLayer.frame = CGRect(x: 80, y: presY, width: 920, height: 40)
     presentsLayer.string = "D Ü K E R   M U S I C   P R E S E N T S"
@@ -652,7 +673,7 @@ if mode.hasPrefix("tour") {
     let logoLayer = CALayer()
     let logoW: CGFloat = format == "story" ? 600 : 500
     let logoH: CGFloat = format == "story" ? 96 : 80
-    let logoY: CGFloat = format == "story" ? 1280 : 940
+    let logoY: CGFloat = format == "story" ? 544 : 330
     if let logo = logoCGImage {
         logoLayer.frame = CGRect(x: (videoSize.width - logoW) / 2.0, y: logoY, width: logoW, height: logoH)
         logoLayer.contents = logo
@@ -661,7 +682,7 @@ if mode.hasPrefix("tour") {
     
     // 3. Show Date
     let dateLayer = CATextLayer()
-    let dateY: CGFloat = format == "story" ? 1100 : 790
+    let dateY: CGFloat = format == "story" ? 760 : 500
     let dateSize: CGFloat = format == "story" ? 42 : 34
     dateLayer.frame = CGRect(x: 80, y: dateY, width: 920, height: 60)
     dateLayer.string = "THURSDAY, 25 JUNE 2026"
@@ -674,7 +695,7 @@ if mode.hasPrefix("tour") {
     
     // 4. Time details
     let timeLayer = CATextLayer()
-    let timeY: CGFloat = format == "story" ? 1010 : 710
+    let timeY: CGFloat = format == "story" ? 860 : 590
     let timeSize: CGFloat = format == "story" ? 28 : 22
     timeLayer.frame = CGRect(x: 80, y: timeY, width: 920, height: 50)
     timeLayer.string = "DOORS OPEN 23:59"
@@ -687,7 +708,7 @@ if mode.hasPrefix("tour") {
     
     // 5. Venue name
     let venueLayer = CATextLayer()
-    let venY: CGFloat = format == "story" ? 820 : 570
+    let venY: CGFloat = format == "story" ? 1030 : 710
     let venSize: CGFloat = format == "story" ? 54 : 44
     venueLayer.frame = CGRect(x: 80, y: venY, width: 920, height: 70)
     venueLayer.string = "MACARENA CLUB"
@@ -700,7 +721,7 @@ if mode.hasPrefix("tour") {
     
     // 6. City & Country
     let cityLayer = CATextLayer()
-    let cityY: CGFloat = format == "story" ? 730 : 490
+    let cityY: CGFloat = format == "story" ? 1140 : 810
     let citySize: CGFloat = format == "story" ? 36 : 30
     cityLayer.frame = CGRect(x: 80, y: cityY, width: 920, height: 50)
     cityLayer.string = "BARCELONA, SPAIN"
@@ -713,7 +734,7 @@ if mode.hasPrefix("tour") {
     
     // 7. Address
     let addressLayer = CATextLayer()
-    let addrY: CGFloat = format == "story" ? 650 : 420
+    let addrY: CGFloat = format == "story" ? 1230 : 890
     let addrSize: CGFloat = format == "story" ? 23 : 18
     addressLayer.frame = CGRect(x: 80, y: addrY, width: 920, height: 40)
     addressLayer.string = "CARRER NOU DE SAN FRANCESC, 5"
@@ -729,7 +750,7 @@ if mode.hasPrefix("tour") {
     let metropoleLayer = CALayer()
     let dukerLayer = CALayer()
     let backingLayer = CALayer()
-    let sponsorY: CGFloat = format == "story" ? 420 : 200
+    let sponsorY: CGFloat = format == "story" ? 1464 : 1120
     let sponsorH: CGFloat = format == "story" ? 36 : 30
     let gap: CGFloat = format == "story" ? 40 : 30
     
@@ -787,7 +808,7 @@ if mode.hasPrefix("tour") {
         // 1. Show the Artist Logo first ("Guiboratto")
         let logoMidY = logoY + logoH / 2.0
         logoLayer.add(createFadeAnimation(begin: 0.5, duration: 0.6, from: 0, to: 1), forKey: "fade")
-        logoLayer.add(createSlideAnimation(begin: 0.5, duration: 0.6, fromY: logoMidY - 40, toY: logoMidY), forKey: "slide")
+        logoLayer.add(createSlideAnimation(begin: 0.5, duration: 0.6, fromY: logoMidY + 40, toY: logoMidY), forKey: "slide")
         
         // 2. Presents Header reveals second
         presentsLayer.add(createFadeAnimation(begin: 1.2, duration: 0.5, from: 0, to: 1), forKey: "fade")
@@ -795,22 +816,22 @@ if mode.hasPrefix("tour") {
         // 3. Show Date
         let dateMidY = dateY + 60.0 / 2.0
         dateLayer.add(createFadeAnimation(begin: 1.8, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        dateLayer.add(createSlideAnimation(begin: 1.8, duration: 0.5, fromY: dateMidY - 30, toY: dateMidY), forKey: "slide")
+        dateLayer.add(createSlideAnimation(begin: 1.8, duration: 0.5, fromY: dateMidY + 30, toY: dateMidY), forKey: "slide")
         
         // 4. Time Details
         let timeMidY = timeY + 50.0 / 2.0
         timeLayer.add(createFadeAnimation(begin: 2.2, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        timeLayer.add(createSlideAnimation(begin: 2.2, duration: 0.5, fromY: timeMidY - 30, toY: timeMidY), forKey: "slide")
+        timeLayer.add(createSlideAnimation(begin: 2.2, duration: 0.5, fromY: timeMidY + 30, toY: timeMidY), forKey: "slide")
         
         // 5. Venue Name
         let venMidY = venY + 70.0 / 2.0
         venueLayer.add(createFadeAnimation(begin: 2.8, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        venueLayer.add(createSlideAnimation(begin: 2.8, duration: 0.5, fromY: venMidY - 40, toY: venMidY), forKey: "slide")
+        venueLayer.add(createSlideAnimation(begin: 2.8, duration: 0.5, fromY: venMidY + 40, toY: venMidY), forKey: "slide")
         
         // 6. City & Country
         let cityMidY = cityY + 50.0 / 2.0
         cityLayer.add(createFadeAnimation(begin: 3.2, duration: 0.5, from: 0, to: 1), forKey: "fade")
-        cityLayer.add(createSlideAnimation(begin: 3.2, duration: 0.5, fromY: cityMidY - 30, toY: cityMidY), forKey: "slide")
+        cityLayer.add(createSlideAnimation(begin: 3.2, duration: 0.5, fromY: cityMidY + 30, toY: cityMidY), forKey: "slide")
         
         // 7. Address
         addressLayer.add(createFadeAnimation(begin: 3.6, duration: 0.5, from: 0, to: 1), forKey: "fade")
@@ -857,9 +878,9 @@ ctaContainer.add(ctaFadeIn, forKey: "fadeIn")
 if style == "glass" {
     let ctaCard = CALayer()
     if format == "story" {
-        ctaCard.frame = CGRect(x: 80, y: 600, width: 920, height: 600)
+        ctaCard.frame = CGRect(x: 80, y: 720, width: 920, height: 600)
     } else {
-        ctaCard.frame = CGRect(x: 80, y: 350, width: 920, height: 550)
+        ctaCard.frame = CGRect(x: 80, y: 450, width: 920, height: 550)
     }
     ctaCard.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0.55)
     ctaCard.cornerRadius = 24
@@ -869,9 +890,9 @@ if style == "glass" {
 } else if style == "neon" {
     let ctaCard = CALayer()
     if format == "story" {
-        ctaCard.frame = CGRect(x: 80, y: 600, width: 920, height: 600)
+        ctaCard.frame = CGRect(x: 80, y: 720, width: 920, height: 600)
     } else {
-        ctaCard.frame = CGRect(x: 80, y: 350, width: 920, height: 550)
+        ctaCard.frame = CGRect(x: 80, y: 450, width: 920, height: 550)
     }
     ctaCard.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0.75)
     ctaCard.cornerRadius = 24
@@ -885,9 +906,9 @@ if style == "glass" {
 } else if style == "minimal" {
     let ctaCard = CALayer()
     if format == "story" {
-        ctaCard.frame = CGRect(x: 80, y: 600, width: 920, height: 600)
+        ctaCard.frame = CGRect(x: 80, y: 720, width: 920, height: 600)
     } else {
-        ctaCard.frame = CGRect(x: 80, y: 350, width: 920, height: 550)
+        ctaCard.frame = CGRect(x: 80, y: 450, width: 920, height: 550)
     }
     ctaCard.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0.4)
     ctaCard.cornerRadius = 12
@@ -901,7 +922,7 @@ if let logo = logoCGImage {
     let logoLayer = CALayer()
     let logoW: CGFloat = format == "story" ? 600 : 500
     let logoH: CGFloat = format == "story" ? 51 : 42
-    let logoY: CGFloat = format == "story" ? 1040 : 780
+    let logoY: CGFloat = format == "story" ? 829 : 528
     logoLayer.frame = CGRect(x: (videoSize.width - logoW) / 2.0, y: logoY, width: logoW, height: logoH)
     logoLayer.contents = logo
     ctaContainer.addSublayer(logoLayer)
@@ -910,7 +931,7 @@ if let logo = logoCGImage {
 // Bold primary text: "TICKETS ON SALE NOW"
 let line1 = CATextLayer()
 let l1Size: CGFloat = format == "story" ? 50 : 40
-let l1Y: CGFloat = format == "story" ? 880 : 620
+let l1Y: CGFloat = format == "story" ? 960 : 650
 line1.frame = CGRect(x: 80, y: l1Y, width: 920, height: 80)
 line1.string = "TICKETS ON SALE NOW"
 line1.font = NSFont(name: fontBoldName, size: l1Size) ?? NSFont.boldSystemFont(ofSize: l1Size)
@@ -923,7 +944,7 @@ ctaContainer.addSublayer(line1)
 // Secondary tracked text: "LINK IN BIO"
 let line2 = CATextLayer()
 let l2Size: CGFloat = format == "story" ? 36 : 30
-let l2Y: CGFloat = format == "story" ? 760 : 500
+let l2Y: CGFloat = format == "story" ? 1100 : 790
 line2.frame = CGRect(x: 80, y: l2Y, width: 920, height: 60)
 line2.string = "L I N K   I N   B I O"
 line2.font = NSFont(name: fontMediumName, size: l2Size) ?? NSFont.systemFont(ofSize: l2Size)
@@ -932,6 +953,29 @@ line2.foregroundColor = CGColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1)
 line2.alignmentMode = .center
 line2.contentsScale = 2.0
 ctaContainer.addSublayer(line2)
+
+// Force layout and rasterization of layers for headless context
+CATransaction.begin()
+CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
+parentLayer.setNeedsLayout()
+parentLayer.layoutIfNeeded()
+parentLayer.setNeedsDisplay()
+parentLayer.displayIfNeeded()
+// Recursively force display and layout on all sublayers to ensure text and card overlays are fully rasterized
+func forceRender(layer: CALayer) {
+    layer.setNeedsLayout()
+    layer.layoutIfNeeded()
+    layer.setNeedsDisplay()
+    layer.displayIfNeeded()
+    if let sublayers = layer.sublayers {
+        for sub in sublayers {
+            forceRender(layer: sub)
+        }
+    }
+}
+forceRender(layer: parentLayer)
+CATransaction.commit()
+CATransaction.flush()
 
 // Construct the Video Composition
 let videoComposition = AVMutableVideoComposition()
