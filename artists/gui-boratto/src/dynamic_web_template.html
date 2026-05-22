@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{web_description}}">
+    <title>{{web_title}}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-mesh: radial-gradient(circle at 10% 20%, rgba(18, 9, 46, 0.9) 0%, rgba(9, 26, 46, 0.9) 40%, rgba(30, 8, 28, 0.9) 100%);
+            --accent-color: #af40ff;
+            --pulse-dur: 0.48s;
+            --glass-bg: rgba(18, 16, 28, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f3f7;
+            --text-secondary: #a09eb5;
+            --font-ui: 'Inter', sans-serif;
+            --font-brand: 'Outfit', sans-serif;
+            --font-display: 'Syne', sans-serif;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg-mesh);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        @keyframes beatPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 255, 255, 0.05); }
+            50% { transform: scale(1.02); box-shadow: 0 0 30px var(--accent-color); border-color: var(--accent-color); }
+        }
+        
+        .pulse-card {
+            animation: beatPulse var(--pulse-dur) infinite ease-in-out;
+        }
+        
+        .glass-header {
+            background: rgba(10, 8, 18, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand-logo {
+            font-family: var(--font-brand);
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        
+        .brand-logo span {
+            color: var(--accent-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+        
+        .hero-text {
+            flex: 1;
+        }
+        
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        
+        .hero-subtitle {
+            font-family: var(--font-brand);
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .hero-bio {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .hero-visuals {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .globe-container {
+            width: 360px;
+            height: 360px;
+            position: relative;
+            background: rgba(18, 16, 28, 0.3);
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        #tour-globe {
+            cursor: grab;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            transition: all 0.3s ease;
+        }
+        
+        .section-title {
+            font-family: var(--font-brand);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tour-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tour-row {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .tour-row:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        .tour-cell {
+            padding: 18px 12px;
+            font-size: 0.95rem;
+        }
+        
+        .cell-date {
+            font-weight: 600;
+            color: var(--accent-color);
+            width: 90px;
+        }
+        
+        .btn-ticket {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-ticket:hover {
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+        
+        .player-wrapper {
+            margin-top: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            line-height: 0;
+        }
+        
+        .player-wrapper iframe {
+            border: none;
+            width: 100%;
+            height: 80px;
+        }
+        
+        .rider-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .rider-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            padding: 15px 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+        }
+        
+        .btn-download {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .btn-download:hover {
+            background: var(--accent-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="glass-header">
+        <a href="#" class="brand-logo">LX8<span>.</span>EVENTS</a>
+        <ul class="nav-links">
+            <li><a href="#tour">Tour Dates</a></li>
+            <li><a href="#about">EPK Press Kit</a></li>
+            <li><a href="#booking">Promoter Hub</a></li>
+        </ul>
+    </header>
+
+    <div class="container">
+        
+        <section class="hero">
+            <div class="hero-text">
+                <div class="hero-subtitle">{{sub}}</div>
+                <h1 class="hero-title">{{name}}</h1>
+                <p class="hero-bio">{{bio}}</p>
+                
+                <div class="pulse-card glass-card" style="padding: 20px; margin-top: 30px; display: inline-flex; align-items: center; gap: 15px; border-radius: 12px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-color); box-shadow: 0 0 10px var(--accent-color);"></div>
+                    <span style="font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">BEAT SYNC PULSE ACTIVE</span>
+                </div>
+            </div>
+            
+            <div class="hero-visuals">
+                <div class="globe-container">
+                    <canvas id="tour-globe"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="tour" class="glass-card" style="margin-bottom: 80px;">
+            <h2 class="section-title"><span>✈️</span> Live Tour Route</h2>
+            
+            <table class="tour-table">
+                <thead>
+                    <tr style="border-bottom: 2px solid rgba(255,255,255,0.08); text-align: left;">
+                        <th class="tour-cell" style="color: var(--text-secondary); font-weight: 600;">Date</th>
+                        <th class="tour-cell" style="color: var(--text-secondary); font-weight: 600;">Venue</th>
+                        <th class="tour-cell" style="color: var(--text-secondary); font-weight: 600;">Location</th>
+                        <th class="tour-cell" style="color: var(--text-secondary); font-weight: 600; text-align: right;">Tickets</th>
+                    </tr>
+                </thead>
+                <tbody id="tour-dates-body">
+                    <!-- Loaded via CSV integration -->
+                </tbody>
+            </table>
+        </section>
+
+        <div class="grid-2">
+            
+            <section id="about" class="glass-card">
+                <h2 class="section-title"><span>📰</span> Electronic Press Kit</h2>
+                <p class="bio-content">{{bio}}</p>
+                
+                <h3 style="font-family: var(--font-brand); margin-top: 30px; margin-bottom: 15px; font-size: 1.1rem; color: #fff;">Featured Release</h3>
+                <div class="player-wrapper">
+                    <iframe src="{{spotify_embed}}" loading="lazy"></iframe>
+                </div>
+            </section>
+
+            <section id="booking" class="glass-card">
+                <h2 class="section-title"><span>⚙️</span> Promoter Booking Kit</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 25px;">Verified local night promoters can download official stage design requirements and digital branding files directly.</p>
+                
+                <ul class="rider-list">
+                    <li class="rider-item">
+                        <div class="rider-name">📄 Technical Stage Rider</div>
+                        <a href="#" class="btn-download" onclick="alert('Downloading Stage Specification Rider...'); return false;">PDF</a>
+                    </li>
+                    <li class="rider-item">
+                        <div class="rider-name">🎨 Press Logos Bundle</div>
+                        <a href="#" class="btn-download" onclick="alert('Downloading Brand Assets Pack...'); return false;">ZIP</a>
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 LX8 Events & Management. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
